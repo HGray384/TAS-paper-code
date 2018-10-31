@@ -2,7 +2,7 @@
 
 ## About
 
-The code reposity for Gray, H., Leday, G.G., Vallejos, C.A. and Richardson, S., 2018. Shrinkage estimation of large covariance matrices using multiple shrinkage targets. arXiv preprint arXiv:1809.08024. The code generates all figures from the paper and was a collaborative effort between Gray, H., Leday, G.G., Vallejos, C.A. The corresponding author may be contacted at gwenael.leday@mrc-bsu.cam.ac.uk (GGRL). Any bug reports should be submitted as issues to https://github.com/HGray384/TAS-paper-code/issues. 
+The code reposity for Gray, H., Leday, G.G., Vallejos, C.A. and Richardson, S., 2018. Shrinkage estimation of large covariance matrices using multiple shrinkage targets. arXiv preprint https://arxiv.org/abs/1809.08024. The code generates all figures from the paper and was a collaborative effort between Gray, H., Leday, G.G., Vallejos, C.A. The corresponding author may be contacted at gwenael.leday@mrc-bsu.cam.ac.uk (GGRL). Any bug reports should be submitted as issues to https://github.com/HGray384/TAS-paper-code/issues. 
 
 ## How to use
 
