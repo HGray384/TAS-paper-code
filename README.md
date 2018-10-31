@@ -10,7 +10,7 @@ Pay careful attention to install the necessary R packages detailed at the beginn
 
 Each file name corresponds to the figures in the paper that are generated in its output. The scripts are best run section-by-section to generate the stated output of a given section, however they can be run fully provided a base directory is specified in the basedir variable near the start of the script.
 
-For Figs-5-6.r the data must first be downloaded from http://tcpaportal.org/tcpa/download.html then selecting the /Downloads/4.2/TCGA/Pan-Can 32/Level 4/TCGA-PANCAN32-L4.zip path option and downloading this dataset. The directory of this dataset on your local machine must then be set in the datadir variable in the script.
+For Figs-5-6.r the data must first be downloaded from http://tcpaportal.org/tcpa/download.html then selecting the /Downloads/4.2/TCGA/Pan-Can 32/Level 4/TCGA-PANCAN32-L4.zip path option and downloading this dataset. The directory of this unzipped dataset on your local machine must then be set in the datadir variable in the script.
 
 ## Session info
 
