@@ -47,14 +47,14 @@ n <- c(25, 50, 75)
 
 ## Auxiliary functions needed
 
-# To generate matrix that stores constant correlation values 
+# To generate a pxp matrix that stores constant correlation values rho
 # (diagonal elements set to zero)
 corr.mat <- function(p = 10, rho = 0.9){
 	mat <- diag(p) + rho
 	diag(mat) <- 0
 	return(mat)
 }
-# To generate matrix that stores decaying correlation values 
+# To generate a pxp matrix that stores decaying correlation values rho^|i-j|
 # (diagonal elements set to zero)
 autocorr.mat <- function(p = 10, rho = 0.9){
 	mat <- diag(p)
@@ -205,6 +205,8 @@ B <- labelsMethods[-length(labelsMethods)]
 rownames(allPrials25) <- rownames(allPrials50) <- rownames(allPrials75) <- B
 
 # Function used to personalise barplot 
+# labs - the estimation method (e.g. TAS)
+# vals - the prial results achieved (e.g. scenario 1 n=25)
 mybarplot <- function(labs, vals){
   tp <- data.frame("labels"=labs, "scenario"=vals)
   tp$labels <- factor(tp$labels, levels = labs)
@@ -255,7 +257,7 @@ myboxplot <- function(vals, size){
   myggplot
 }
 
-# Plot and save results - Weights
+# Plot results - Weights
 for(ii in 1:4){
   assign(paste0("weightsScenar",ii),myboxplot(vals = res[[ii]], size = 1))
   plot(get(paste0("weightsScenar",ii)))
