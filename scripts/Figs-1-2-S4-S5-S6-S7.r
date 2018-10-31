@@ -4,7 +4,7 @@
 #
 # Authors: Harry Gray, Gwenael Leday and Catalina Vallejos
 #
-# Date: Sep 20, 2018
+# Date: Oct 31, 2018
 #
 #############################################################################
 
@@ -23,17 +23,48 @@ base.dir <-
 setwd(base.dir)
 
 ## Required libraries and source code
-library(TAS) # library(devtools);install_github("HGray384/TAS")
+if(!require("TAS")){
+  if(!require("devtools")){
+    install.packages("devtools")
+  }
+  library(devtools)
+  install_github("HGray384/TAS")
+}
+library(TAS)
+if(!require("MCMCpack")){
+  install.packages("MCMCpack")
+}
 library(MCMCpack)
+if(!require("MASS")){
+  install.packages("MASS")
+}
 library(MASS)
+if(!require("Matrix")){
+  install.packages("Matrix")
+}
 library(Matrix)
+if(!require("corpcor")){
+  install.packages("corpcor")
+}
 library(corpcor)
+if(!require("ShrinkCovMat")){
+  install.packages("ShrinkCovMat")
+}
 library(ShrinkCovMat)
+if(!require("ggplot2")){
+  install.packages("ggplot2")
+}
 library(ggplot2)
-library(data.table)
-library(cgdsr)
-library(org.Hs.eg.db)
+if(!require("data.table")){
+  install.packages("data.table")
+}
+if(!require("BDgraph")){
+  install.packages("BDgraph")
+}
 library(BDgraph)
+if(!require("corrplot")){
+  install.packages("corrplot")
+}
 library(corrplot)
 source('./scripts/scm_un.R')
 
@@ -177,6 +208,8 @@ labelsMethods <- c(paste0("ST", 1:9), "TAS", paste0("AT", 1:3), "CPC", "S")
 unlist(lapply(list(res1, res2, res3, res4), function(yy){any(is.na(yy))}))
 
 # Function that computes PRIAL
+# res is the frobenius loss results for a scenario
+# nindx is the index of the value of n (e.g. nindx=1 is for n=25)
 get.prial <- function(res, nindx=1){
   tp <- res[,nindx,]
   tp <- sapply(1:nrow(tp), function(x){unlist(tp[x,])}, simplify = FALSE)
@@ -206,7 +239,7 @@ rownames(allPrials25) <- rownames(allPrials50) <- rownames(allPrials75) <- B
 
 # Function used to personalise barplot 
 # labs - the estimation method (e.g. TAS)
-# vals - the prial results achieved (e.g. scenario 1 n=25)
+# vals - the prial results achieved (e.g. scenario 1 & n=25)
 mybarplot <- function(labs, vals){
   tp <- data.frame("labels"=labs, "scenario"=vals)
   tp$labels <- factor(tp$labels, levels = labs)
@@ -239,7 +272,9 @@ for(ii in 1:4){
 res <- list(simplify2array(res1[2,]), simplify2array(res2[2,]),
             simplify2array(res3[2,]), simplify2array(res4[2,]))
 
-# Function used to personalise barplot 
+# Function used to personalise barplot
+# vals - weight for the set of targets
+# size - coding of the value of n (e.g. size = 1 is n = 25)
 myboxplot <- function(vals, size){
   tp <- data.table(t(vals[,size,]))
   names(tp) <- paste0("T", seq_len(9))

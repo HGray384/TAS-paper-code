@@ -1,10 +1,10 @@
 #############################################################################
 #
-# Title: supplementary material figures
+# Title: Other supplementary material figures
 #
 # Authors: Harry Gray, Gwenael Leday and Catalina Vallejos
 #
-# Date: Sep 18, 2018
+# Date: Oct 31, 2018
 #
 #############################################################################
 
@@ -20,8 +20,14 @@ rm(list=ls());gc()
 
 ########################### MLE plot
 ####################################
-library("abind")
-library("MCMCpack")
+if(!require("abind")){
+  install.packages("abind")
+}
+library(abind)
+if(!require("MCMCpack")){
+  install.packages("MCMCpack")
+}
+library(MCMCpack)
 
 # data dimensions
 p <- seq(200, 1000, 200)
@@ -85,10 +91,26 @@ mtext("b)", side=3, adj=-0.23, cex=1.5, line=1.5)
 ##########################################################
 
 # model-based simulations
-library("TAS")
-library("MCMCpack")
-library("MASS")
-library("Matrix")
+if(!require("TAS")){
+  if(!require("devtools")){
+    install.packages("devtools")
+  }
+  library(devtools)
+  install_github("HGray384/TAS")
+}
+library(TAS)
+if(!require("MCMCpack")){
+  install.packages("MCMCpack")
+}
+library(MCMCpack)
+if(!require("MASS")){
+  install.packages("MASS")
+}
+library(MASS)
+if(!require("Matrix")){
+  install.packages("Matrix")
+}
+library(Matrix)
 
 # dimension values
 p <- 200
@@ -124,10 +146,26 @@ which(1/BF>3)[which(1/BF<20)]
 ######################################### grid of A versus PRIAL
 ################################################################
 
-library("TAS")
-library("MCMCpack")
-library("MASS")
-library("Matrix")
+if(!require("TAS")){
+  if(!require("devtools")){
+    install.packages("devtools")
+  }
+  library(devtools)
+  install_github("HGray384/TAS")
+}
+library(TAS)
+if(!require("MCMCpack")){
+  install.packages("MCMCpack")
+}
+library(MCMCpack)
+if(!require("MASS")){
+  install.packages("MASS")
+}
+library(MASS)
+if(!require("Matrix")){
+  install.packages("Matrix")
+}
+library(Matrix)
 
 # grids to compare
 alpha1 <- c(0.2, 0.4, 0.6, 0.8)
@@ -174,6 +212,9 @@ losses <- replicate(100, simu())
 losses <- matrix(unlist(losses), nrow=7, ncol=100)
 
 # PRIAL function
+# frobs - matrix of frobenius losses
+# baseline - index of the baseline comparison to be used 
+#  in this case the index of the sample covariance matrix losses
 prial <- function(frobs, baseline){
   (sum(frobs[baseline, ])-rowSums(frobs[-baseline,]))/sum(frobs[baseline, ])*100
 }
@@ -187,10 +228,21 @@ axis(1, at=1:6, labels = nm, las=1)
 ###############################################################
 
 # Libraries
-# install.packages("cgdsr")
+if(!require("cgdsr")){
+  install.packages("cgdsr")
+}
 library(cgdsr)
-#source("https://bioconductor.org/biocLite.R");biocLite("org.Hs.eg.db")
+if (!requireNamespace("BiocManager"))
+  install.packages("BiocManager")
+BiocManager::install()
+if(!require("org.Hs.eg.db")){
+  source("https://bioconductor.org/biocLite.R")
+  biocLite("org.Hs.eg.db")
+}
 library(org.Hs.eg.db)
+if(!require("MVN")){
+  install.packages("MVN")
+}
 library('MVN')
 
 ###### run the same processing script as in TCGA data files
@@ -226,20 +278,8 @@ dim(apoptosis)
 # Create CGDS object
 mycgds <- CGDS("http://www.cbioportal.org/")
 
-# Test the CGDS endpoint URL using a few simple API tests
-#test(mycgds)
-
-# List of cancer studies
-#getCancerStudies(mycgds)[,1:2]
-
-# Data available for Breast cancer
-#getCaseLists(mycgds, "brca_tcga")[,c(1:2)]
-
-# Get available genetic profiles
-#mygeneticprofile = getGeneticProfiles(mycgds, "brca_tcga_mrna")[1,1]
-
 # Identify cancer types for which microarray data are available
-f <- function(x){substr(x, nchar(x)-4, nchar(x))}
+f <- function(x){substr(x, nchar(x)-4, nchar(x))} # string parsing
 ind <- sapply(getCancerStudies(mycgds)[,1], f) == "_tcga"
 allcancers <- sort(getCancerStudies(mycgds)[ind,1])
 
@@ -247,7 +287,7 @@ allcancers <- sort(getCancerStudies(mycgds)[ind,1])
 TCGAp53 <- rep(list(NULL), length(allcancers))
 TCGAapopt <- rep(list(NULL), length(allcancers))
 names(TCGAp53) <- names(TCGAapopt) <- unlist(lapply(strsplit(allcancers, "_"), function(x){x[1]}))
-f2 <- function(x){substr(x, nchar(x)-8, nchar(x))}
+f2 <- function(x){substr(x, nchar(x)-8, nchar(x))} # string parsing
 for(i in 1:length(allcancers)){
   tp <- getCaseLists(mycgds, allcancers[i])[,c(1:2)]
   ind <- sapply(tp[,1], f2) == "tcga_mrna"

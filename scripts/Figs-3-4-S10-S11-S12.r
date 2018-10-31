@@ -4,7 +4,7 @@
 #
 # Authors: Harry Gray, Gwenael Leday and Catalina Vallejos
 #
-# Date: Sep 20, 2018
+# Date: Oct 31, 2018
 #
 #############################################################################
 
@@ -18,23 +18,52 @@
 # clean environment
 rm(list=ls());gc()
 
-# Set the wd to the base github folder
+# Set the wd to the base folder
 base.dir <-
 setwd(base.dir)
 
 # model-based simulations
-library("TAS")# library(devtools);install_github("HGray384/TAS")
+if(!require("TAS")){
+  if(!require("devtools")){
+    install.packages("devtools")
+  }
+  library(devtools)
+  install_github("HGray384/TAS")
+}
+library(TAS)
+if(!require("abind")){
+  install.packages("abind")
+}
+library(abind)
+if(!require("corpcor")){
+  install.packages("corpcor")
+}
 library("corpcor")
+if(!require("ShrinkCovMat")){
+  install.packages("ShrinkCovMat")
+}
 library("ShrinkCovMat")
-library("abind")
+if(!require("data.table")){
+  install.packages("data.table")
+}
 library("data.table")
+if(!require("ggplot2")){
+  install.packages("ggplot2")
+}
 library("ggplot2")
+if(!require("cgdsr")){
+  install.packages("cgdsr")
+}
+library(cgdsr)
+if (!requireNamespace("BiocManager"))
+  install.packages("BiocManager")
+BiocManager::install()
+if(!require("org.Hs.eg.db")){
+  source("https://bioconductor.org/biocLite.R")
+  biocLite("org.Hs.eg.db")
+}
+library(org.Hs.eg.db)
 source('./scripts/scm_un.R')
-# install.packages("cgdsr")
-library("cgdsr")
-#source("https://bioconductor.org/biocLite.R");biocLite("org.Hs.eg.db")
-library("org.Hs.eg.db")
-
 
 #############################################################################
 #############################################################################
@@ -69,7 +98,7 @@ dim(apoptosis)
 mycgds <- CGDS("http://www.cbioportal.org/")
 
 # Identify cancer types for which microarray data are available
-f <- function(x){substr(x, nchar(x)-4, nchar(x))}
+f <- function(x){substr(x, nchar(x)-4, nchar(x))} # string parsing
 ind <- sapply(getCancerStudies(mycgds)[,1], f) == "_tcga"
 allcancers <- sort(getCancerStudies(mycgds)[ind,1])
 
@@ -77,7 +106,7 @@ allcancers <- sort(getCancerStudies(mycgds)[ind,1])
 TCGAp53 <- rep(list(NULL), length(allcancers))
 TCGAapopt <- rep(list(NULL), length(allcancers))
 names(TCGAp53) <- names(TCGAapopt) <- unlist(lapply(strsplit(allcancers, "_"), function(x){x[1]}))
-f2 <- function(x){substr(x, nchar(x)-8, nchar(x))}
+f2 <- function(x){substr(x, nchar(x)-8, nchar(x))} # string parsing
 for(i in 1:length(allcancers)){
   tp <- getCaseLists(mycgds, allcancers[i])[,c(1:2)]
   ind <- sapply(tp[,1], f2) == "tcga_mrna"
@@ -151,6 +180,10 @@ weightsBRCA3 <- array(0, c(18, length(alpha), reps, length(n0)))
 # Function to return regularized covariance estimate
 varcorcodes <- which(matrix(TRUE, 3, 3), arr.ind=TRUE)
 regS <- function(y, varcorcodes){
+  # returns the regularised sample covariance matrix of matrix input y
+  # by running TAS with default target set
+  # the target set is indexed by varcorcodes according to variance 
+  # and correlation structure (?taShrink)
 	thelistTargets <- sapply(1:nrow(varcorcodes), function(x){getTarget(y, var=varcorcodes[x, 1], cor=varcorcodes[x, 2])}, simplify=FALSE)
 	thearrayTargets <- simplify2array(thelistTargets)
 	taShrink(y, targets = thearrayTargets, without = 0, alpha = alpha, plots = FALSE)$sigmahat
@@ -332,26 +365,16 @@ for (i in 1:length(n0)){
 ### PLOT RESULTS
 
 # PRIAL function
+# frobs - matrix of frobenius losses
+# baseline - index of the baseline comparison to be used 
+#  in this case the index of the sample covariance matrix losses
 prial <- function(frobs, baseline){
   (sum(frobs[baseline, ])-rowSums(frobs[-baseline,]))/sum(frobs[baseline, ])*100
 }
 
-# Function used to personalise barplot 
-mybarplot <- function(labs, vals){
-  tp <- data.frame("labels"=labs, "scenario"=vals)
-  tp$labels <- factor(tp$labels, levels = labs)
-  myggplot <- ggplot(tp, aes(x=tp$labels, y=tp$scenario)) +
-    geom_bar(stat="identity") +
-    theme_bw() +
-    ylim(min(c(0,vals)), 100) +
-    xlab("") + ylab("PRIAL") + 
-    theme(axis.title.y = element_text(size = rel(1.8)),
-          axis.text.y = element_text(size = rel(1.6)),
-          axis.text.x = element_text(size = rel(1.4)))
-  myggplot
-}
 
 # Function used to personalise barplot (TAS)
+# vals are the TAS weights for each target
 myboxplot <- function(vals){
   tp <- data.table(t(vals))
   names(tp) <- c(paste0("T", seq_len(9)), "S")
@@ -369,6 +392,7 @@ myboxplot <- function(vals){
 }
 
 # Function used to personalise barplot (TAS-info)
+# vals are the TAS-info weights for each target
 myboxplot2 <- function(vals){
   tp <- data.table(t(vals))
   names(tp) <- c(paste0("T", seq_len(9)), "ext", "S")

@@ -4,7 +4,7 @@
 #
 # Authors: Harry Gray, Gwenael Leday and Catalina Vallejos
 #
-# Date: Sep 20, 2018
+# Date: Oct 31, 2018
 #
 #############################################################################
 
@@ -23,17 +23,48 @@ base.dir <-
 setwd(base.dir)
 
 ## Required libraries and source code
-library(TAS) # library(devtools);install_github("HGray384/TAS")
+if(!require("TAS")){
+  if(!require("devtools")){
+    install.packages("devtools")
+  }
+  library(devtools)
+  install_github("HGray384/TAS")
+}
+library(TAS)
+if(!require("MCMCpack")){
+  install.packages("MCMCpack")
+}
 library(MCMCpack)
+if(!require("MASS")){
+  install.packages("MASS")
+}
 library(MASS)
+if(!require("Matrix")){
+  install.packages("Matrix")
+}
 library(Matrix)
+if(!require("corpcor")){
+  install.packages("corpcor")
+}
 library(corpcor)
+if(!require("ShrinkCovMat")){
+  install.packages("ShrinkCovMat")
+}
 library(ShrinkCovMat)
+if(!require("ggplot2")){
+  install.packages("ggplot2")
+}
 library(ggplot2)
-library(data.table)
-library(cgdsr)
-library(org.Hs.eg.db)
+if(!require("data.table")){
+  install.packages("data.table")
+}
+if(!require("BDgraph")){
+  install.packages("BDgraph")
+}
 library(BDgraph)
+if(!require("corrplot")){
+  install.packages("corrplot")
+}
 library(corrplot)
 source('./scripts/scm_un.R')
 
@@ -47,14 +78,14 @@ n <- c(25, 50, 75)
 
 ## Auxiliary functions needed
 
-# To generate matrix that stores constant correlation values 
+# To generate a pxp matrix that stores constant correlation values rho
 # (diagonal elements set to zero)
 corr.mat <- function(p = 10, rho = 0.9){
 	mat <- diag(p) + rho
 	diag(mat) <- 0
 	return(mat)
 }
-# To generate matrix that stores decaying correlation values 
+# To generate a pxp matrix that stores decaying correlation values rho^|i-j|
 # (diagonal elements set to zero)
 autocorr.mat <- function(p = 10, rho = 0.9){
 	mat <- diag(p)
@@ -155,11 +186,20 @@ list75 <- lapply(res1, function(xx){xx[[3]]})
 avgFrob75 <- Reduce("+", list75)/length(list75)
 colnames(avgFrob75) <- rownames(avgFrob75) <- mylabs
 
-corrplot(round(avgFrob25), is.corr = FALSE, mar = c(0.1, 0.1, 0.1, 1.1), method="color", addgrid.col = "black", tl.col='black', tl.cex=c(rep(1,9),1.5), col=colorRampPalette(c("blue", "white", "black"))(200), type="upper")
+corrplot(round(avgFrob25), is.corr = FALSE, mar = c(0.1, 0.1, 0.1, 1.1),
+         method="color", addgrid.col = "black", tl.col='black', 
+         tl.cex=c(rep(1,9),1.5), 
+         col=colorRampPalette(c("blue", "white", "black"))(200), type="upper")
 
-corrplot(round(avgFrob50), is.corr = FALSE, mar = c(0.1, 0.1, 0.1, 1.1), method="color", addgrid.col = "black", tl.col='black', tl.cex=c(rep(1,9),1.5), col=colorRampPalette(c("blue", "white", "black"))(200), type="upper")
+corrplot(round(avgFrob50), is.corr = FALSE, mar = c(0.1, 0.1, 0.1, 1.1),
+         method="color", addgrid.col = "black", tl.col='black', 
+         tl.cex=c(rep(1,9),1.5), 
+         col=colorRampPalette(c("blue", "white", "black"))(200), type="upper")
 
-corrplot(round(avgFrob75), is.corr = FALSE, mar = c(0.1, 0.1, 0.1, 1.1), method="color", addgrid.col = "black", tl.col='black', tl.cex=c(rep(1,9),1.5), col=colorRampPalette(c("blue", "white", "black"))(200), type="upper")
+corrplot(round(avgFrob75), is.corr = FALSE, mar = c(0.1, 0.1, 0.1, 1.1), 
+         method="color", addgrid.col = "black", tl.col='black',
+         tl.cex=c(rep(1,9),1.5), 
+         col=colorRampPalette(c("blue", "white", "black"))(200), type="upper")
 
 # Scenario 2
 set.seed(2)
@@ -175,11 +215,20 @@ list75 <- lapply(res2, function(xx){xx[[3]]})
 avgFrob75 <- Reduce("+", list75)/length(list75)
 colnames(avgFrob75) <- rownames(avgFrob75) <- mylabs
 
-corrplot(round(avgFrob25), is.corr = FALSE, mar = c(0.1, 0.1, 0.1, 1.1), method="color", addgrid.col = "black", tl.col='black', tl.cex=c(rep(1,9),1.5), col=colorRampPalette(c("blue", "white", "black"))(200), type="upper")
+corrplot(round(avgFrob25), is.corr = FALSE, mar = c(0.1, 0.1, 0.1, 1.1),
+         method="color", addgrid.col = "black", tl.col='black',
+         tl.cex=c(rep(1,9),1.5),
+         col=colorRampPalette(c("blue", "white", "black"))(200), type="upper")
 
-corrplot(round(avgFrob50), is.corr = FALSE, mar = c(0.1, 0.1, 0.1, 1.1), method="color", addgrid.col = "black", tl.col='black', tl.cex=c(rep(1,9),1.5), col=colorRampPalette(c("blue", "white", "black"))(200), type="upper")
+corrplot(round(avgFrob50), is.corr = FALSE, mar = c(0.1, 0.1, 0.1, 1.1),
+         method="color", addgrid.col = "black", tl.col='black', 
+         tl.cex=c(rep(1,9),1.5),
+         col=colorRampPalette(c("blue", "white", "black"))(200), type="upper")
 
-corrplot(round(avgFrob75), is.corr = FALSE, mar = c(0.1, 0.1, 0.1, 1.1), method="color", addgrid.col = "black", tl.col='black', tl.cex=c(rep(1,9),1.5), col=colorRampPalette(c("blue", "white", "black"))(200), type="upper")
+corrplot(round(avgFrob75), is.corr = FALSE, mar = c(0.1, 0.1, 0.1, 1.1),
+         method="color", addgrid.col = "black", tl.col='black', 
+         tl.cex=c(rep(1,9),1.5), 
+         col=colorRampPalette(c("blue", "white", "black"))(200), type="upper")
 
 
 
@@ -197,11 +246,20 @@ list75 <- lapply(res3, function(xx){xx[[3]]})
 avgFrob75 <- Reduce("+", list75)/length(list75)
 colnames(avgFrob75) <- rownames(avgFrob75) <- mylabs
 
-corrplot(round(avgFrob25), is.corr = FALSE, mar = c(0.1, 0.1, 0.1, 1.1), method="color", addgrid.col = "black", tl.col='black', tl.cex=c(rep(1,9),1.5), col=colorRampPalette(c("blue", "white", "black"))(200), type="upper")
+corrplot(round(avgFrob25), is.corr = FALSE, mar = c(0.1, 0.1, 0.1, 1.1),
+         method="color", addgrid.col = "black", tl.col='black', 
+         tl.cex=c(rep(1,9),1.5), 
+         col=colorRampPalette(c("blue", "white", "black"))(200), type="upper")
 
-corrplot(round(avgFrob50), is.corr = FALSE, mar = c(0.1, 0.1, 0.1, 1.1), method="color", addgrid.col = "black", tl.col='black', tl.cex=c(rep(1,9),1.5), col=colorRampPalette(c("blue", "white", "black"))(200), type="upper")
+corrplot(round(avgFrob50), is.corr = FALSE, mar = c(0.1, 0.1, 0.1, 1.1),
+         method="color", addgrid.col = "black", tl.col='black', 
+         tl.cex=c(rep(1,9),1.5), 
+         col=colorRampPalette(c("blue", "white", "black"))(200), type="upper")
 
-corrplot(round(avgFrob75), is.corr = FALSE, mar = c(0.1, 0.1, 0.1, 1.1), method="color", addgrid.col = "black", tl.col='black', tl.cex=c(rep(1,9),1.5), col=colorRampPalette(c("blue", "white", "black"))(200), type="upper")
+corrplot(round(avgFrob75), is.corr = FALSE, mar = c(0.1, 0.1, 0.1, 1.1),
+         method="color", addgrid.col = "black", tl.col='black', 
+         tl.cex=c(rep(1,9),1.5), 
+         col=colorRampPalette(c("blue", "white", "black"))(200), type="upper")
 
 
 
@@ -220,11 +278,20 @@ avgFrob75 <- Reduce("+", list75)/length(list75)
 colnames(avgFrob75) <- rownames(avgFrob75) <- mylabs
 
 
-corrplot(round(avgFrob25), is.corr = FALSE, mar = c(0.1, 0.1, 0.1, 1.1), method="color", addgrid.col = "black", tl.col='black', tl.cex=c(rep(1,9),1.5), col=colorRampPalette(c("blue", "white", "black"))(200), type="upper")
+corrplot(round(avgFrob25), is.corr = FALSE, mar = c(0.1, 0.1, 0.1, 1.1), 
+         method="color", addgrid.col = "black", tl.col='black',
+         tl.cex=c(rep(1,9),1.5), 
+         col=colorRampPalette(c("blue", "white", "black"))(200), type="upper")
 
-corrplot(round(avgFrob50), is.corr = FALSE, mar = c(0.1, 0.1, 0.1, 1.1), method="color", addgrid.col = "black", tl.col='black', tl.cex=c(rep(1,9),1.5), col=colorRampPalette(c("blue", "white", "black"))(200), type="upper")
+corrplot(round(avgFrob50), is.corr = FALSE, mar = c(0.1, 0.1, 0.1, 1.1), 
+         method="color", addgrid.col = "black", tl.col='black', 
+         tl.cex=c(rep(1,9),1.5), 
+         col=colorRampPalette(c("blue", "white", "black"))(200), type="upper")
 
-corrplot(round(avgFrob75), is.corr = FALSE, mar = c(0.1, 0.1, 0.1, 1.1), method="color", addgrid.col = "black", tl.col='black', tl.cex=c(rep(1,9),1.5), col=colorRampPalette(c("blue", "white", "black"))(200), type="upper")
+corrplot(round(avgFrob75), is.corr = FALSE, mar = c(0.1, 0.1, 0.1, 1.1), 
+         method="color", addgrid.col = "black", tl.col='black',
+         tl.cex=c(rep(1,9),1.5),
+         col=colorRampPalette(c("blue", "white", "black"))(200), type="upper")
 
 
 

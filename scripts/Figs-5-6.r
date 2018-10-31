@@ -4,7 +4,7 @@
 #
 # Authors: Harry Gray, Gwenael Leday and Catalina Vallejos
 #
-# Date: Sep 20, 2018
+# Date: Oct 31, 2018
 #
 #############################################################################
 
@@ -20,19 +20,30 @@
 rm(list=ls());gc()
 
 # model-based simulations
-# install.packages("TAS_1.0.tar.gz", repos=NULL, type="source")
-library(TAS)# library(devtools);install_github("HGray384/TAS")
+if(!require("TAS")){
+  if(!require("devtools")){
+    install.packages("devtools")
+  }
+  library(devtools)
+  install_github("HGray384/TAS")
+}
+library(TAS)
+if(!require("abind")){
+  install.packages("abind")
+}
 library(abind)
+if(!require("corrplot")){
+  install.packages("corrplot")
+}
 library(corrplot)
 
 # Import pancancer proteomic data
-# the data can be found at 
+# the data can be found at 'http://tcpaportal.org/tcpa/download.html'
 # using the /Downloads/4.2/TCGA/Pan-Can 32/Level 4/TCGA-PANCAN32-L4.zip
-# folder of the drop down menu from
-# 'http://tcpaportal.org/tcpa/download.html'
+# folder of the drop down menu
 # The data used here was downloaded on 21/Aug/2018
 
-# set the directory for the saved TCPA data
+# set the directory for the saved TCPA data on your local machine
 datadir <- 
 PAN <- read.csv(datadir, stringsAsFactors = FALSE)
 
@@ -58,6 +69,8 @@ alpha <- seq(0.01, 0.99, 0.01) # shrinkage grid
 regS <- function(y, varcorcodes){
   # returns the regularised sample covariance matrix of matrix input y
   # by running TAS with default target set
+  # the target set is indexed by varcorcodes according to variance 
+  # and correlation structure (?taShrink)
 	thelistTargets <- sapply(1:nrow(varcorcodes), 
 	                         function(x) {getTarget(t(y), var=varcorcodes[x, 1], cor=varcorcodes[x, 2])}, 
 	                         simplify=FALSE)
@@ -93,6 +106,8 @@ simplify2array(lapply(dataBasedTargetsList, dim))
 
 FigFive <- function(pandatList, Cancer, varcorcodes, 
                     dataBasedTargetsList, dataBasedTargetsArray) {
+  ## generates Figure 5
+  ## see above variables for the argument descriptions
   
   # Get 9 'default' targets
   dat <- scale(pandatList[[Cancer]], center = TRUE, scale = FALSE)
